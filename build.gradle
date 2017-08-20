@@ -1,0 +1,23 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+  id "com.github.hierynomus.license" version "0.13.1"
+  id "com.xebialabs.xldp" version "1.0.5"
+  id "java"
+}
+
+version = "1.0.0"
+
+processResources.configure {
+  filter ReplaceTokens, tokens: [
+    'project.version': version.toString(),
+    'project.name'   : rootProject.name
+  ]
+}
+
+license {
+  header rootProject.file('License.md')
+  strictCheck false
+  ext.year = Calendar.getInstance().get(Calendar.YEAR)
+  ext.name = 'XEBIALABS'
+}
