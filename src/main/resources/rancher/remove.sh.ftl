@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<#--
 
     Copyright 2017 XEBIALABS
 
@@ -10,36 +9,4 @@
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-<rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
-
-  <rule name="rancher.DeployedComposeArchive.CREATE_MODIFY" scope="deployed">
-    <conditions>
-      <type>rancher.DeployedComposeArchive</type>
-      <operation>CREATE</operation>
-      <operation>MODIFY</operation>
-    </conditions>
-    <steps>
-      <os-script>
-        <script>rancher/compose</script>
-        <description>Run Rancher Compose</description>
-        <order>60</order>
-      </os-script>
-    </steps>
-  </rule>
-
-  <rule name="rancher.DeployedComposeArchive.DESTROY" scope="deployed">
-    <conditions>
-      <type>rancher.DeployedComposeArchive</type>
-      <operation>DESTROY</operation>
-    </conditions>
-    <steps>
-      <os-script>
-        <script>rancher/remove</script>
-        <description>Run Rancher Remove</description>
-        <order>40</order>
-      </os-script>
-    </steps>
-  </rule>
-
-</rules>
-
+${previousDeployed.container.cliPath} rm --type stack ${previousDeployed.name}
