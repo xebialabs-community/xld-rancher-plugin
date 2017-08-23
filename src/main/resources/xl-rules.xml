@@ -71,7 +71,7 @@
 
   <rule name="rancher.RestDeployedComposeArchive.NOOP" scope="deployed">
     <conditions>
-      <type>rancher.RestDeployedRestApiComposeArchive</type>
+      <type>rancher.RestDeployedComposeArchive</type>
       <operation>NOOP</operation>
     </conditions>
     <steps>
