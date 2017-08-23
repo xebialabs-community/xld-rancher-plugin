@@ -12,32 +12,88 @@
 -->
 <rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
 
-  <rule name="rancher.DeployedComposeArchive.CREATE_MODIFY" scope="deployed">
+  <rule name="rancher.CliDeployedComposeArchive.CREATE_MODIFY" scope="deployed">
     <conditions>
-      <type>rancher.DeployedComposeArchive</type>
+      <type>rancher.CliDeployedComposeArchive</type>
       <operation>CREATE</operation>
       <operation>MODIFY</operation>
     </conditions>
     <steps>
       <os-script>
-        <script>rancher/compose</script>
+        <script>rancher/cli/compose</script>
         <description>Run Rancher Compose</description>
         <order>60</order>
       </os-script>
     </steps>
   </rule>
 
-  <rule name="rancher.DeployedComposeArchive.DESTROY" scope="deployed">
+  <rule name="rancher.CliDeployedComposeArchive.DESTROY" scope="deployed">
     <conditions>
-      <type>rancher.DeployedComposeArchive</type>
+      <type>rancher.CliDeployedComposeArchive</type>
       <operation>DESTROY</operation>
     </conditions>
     <steps>
       <os-script>
-        <script>rancher/remove</script>
+        <script>rancher/cli/remove</script>
         <description>Run Rancher Remove</description>
         <order>40</order>
       </os-script>
+    </steps>
+  </rule>
+
+  <rule name="rancher.RestDeployedComposeArchive.CREATE" scope="deployed">
+    <conditions>
+      <type>rancher.RestDeployedComposeArchive</type>
+      <operation>CREATE</operation>
+    </conditions>
+    <steps>
+      <jython>
+        <order>60</order>
+        <description>Create</description>
+        <script>rancher/rest/create.py</script>
+      </jython>
+    </steps>
+  </rule>
+
+  <rule name="rancher.RestDeployedComposeArchive.MODIFY" scope="deployed">
+    <conditions>
+      <type>rancher.RestDeployedComposeArchive</type>
+      <operation>MODIFY</operation>
+    </conditions>
+    <steps>
+      <jython>
+        <order>60</order>
+        <description>Modify</description>
+        <script>rancher/rest/modify.py</script>
+      </jython>
+    </steps>
+  </rule>
+
+  <rule name="rancher.RestDeployedComposeArchive.NOOP" scope="deployed">
+    <conditions>
+      <type>rancher.RestDeployedRestApiComposeArchive</type>
+      <operation>NOOP</operation>
+    </conditions>
+    <steps>
+      <jython>
+      <order>60</order>
+      <description>Upgrade</description>
+      <script>rancher/rest/upgrade.py</script>
+     </jython>
+    </steps>
+  </rule>
+
+  <rule name="rancher.RestDeployedComposeArchive.DESTROY" scope="deployed">
+    <conditions>
+      <type>rancher.RestDeployedComposeArchive</type>
+      <operation>DESTROY</operation>
+    </conditions>
+    <steps>
+      <jython>
+        <order>40</order>
+        <description>Destroy</description>
+        <script>rancher/rest/destroy.py</script>
+      </jython>
     </steps>
   </rule>
 

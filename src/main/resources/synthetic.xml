@@ -12,17 +12,30 @@
 -->
 <synthetic xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd" xmlns="http://www.xebialabs.com/deployit/synthetic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <type type="rancher.RancherClient" extends="udm.BaseContainer">
-    	  <property name="host" kind="ci" referenced-type="overthere.Host" as-containment="true" />
+    <type type="rancher.RancherCliClient" extends="udm.BaseContainer">
+        <property name="host" kind="ci" referenced-type="overthere.Host" as-containment="true" />
         <property name="cliPath" />
         <property name="url" />
         <property name="accessKey" />
         <property name="secretKey" password="true" />
     </type>
 
-    <type type="rancher.DeployedComposeArchive" extends="udm.BaseDeployedArtifact" deployable-type="rancher.ComposeArchive" container-type="rancher.RancherClient">
-        <generate-deployable type="rancher.ComposeArchive" extends="udm.BaseDeployableArchiveArtifact" />
+    <type type="rancher.RancherRestClient" extends="overthere.LocalHost">
+         <property name="host" required="true" />
+         <property name="restPort" required="true" />
+         <property name="accessKey" required="true" />
+         <property name="secretKey" required="true" password="true" />
     </type>
+
+    <type type="rancher.ComposeArchive" extends="udm.BaseDeployableArchiveArtifact" />
+        <property name="projectName" />
+        <property name="stackName" />
+        <property name="serviceName" />
+    </type>
+
+    <type type="rancher.CliDeployedComposeArchive" extends="udm.BaseDeployedArtifact" deployable-type="rancher.ComposeArchive" container-type="rancher.RancherCliClient" />
+
+    <type type="rancher.RestDeployedComposeArchive" extends="udm.BaseDeployedArtifact" deployable-type="rancher.ComposeArchive" container-type="rancher.RancherRestClient" />
 
     <!-- control task for config setup? -->
 
