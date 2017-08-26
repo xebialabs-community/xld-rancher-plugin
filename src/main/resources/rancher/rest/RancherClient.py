@@ -10,6 +10,8 @@
 
 import base64
 import json
+import sets
+import sys
 import time
 from urlparse import urlparse
 from urlparse import urlunparse
@@ -19,10 +21,11 @@ from http.http_request import HttpRequest
 from http.http_response import HttpResponse
 from http.http_entity_builder import HttpEntityBuilder
 
+HTTP_SUCCESS = sets.Set([200,201,202])
+
 class RancherClient(object):
     def __init__(self, host, port, username, password):
-        print "Executing __init__() method in RancherClient class in RancherClient.py\n"
-#       self.http_connection = HttpConnection("http://%s:%s" % (host, port), username, password)
+        print "Executing method __init__() in class RancherClient in file RancherClient.py\n"
         self.baseUrl = urlunparse(('http', '%s:%s' % (host,port), '', '', '', ''))
         self.http_connection = HttpConnection(self.baseUrl, username, password)
         self.request = HttpRequest(self.http_connection, username, password)
@@ -30,34 +33,44 @@ class RancherClient(object):
 
     @staticmethod
     def createClient(host, port, username, password):
-        print "Executing createClient() method in RancherClient class in RancherClient.py\n"
+        print "Executing method createClient() in class RancherClient class in file RancherClient.py\n"
         return RancherClient(host, port, username, password)
 
     def upgradeRancherServices(self, projectName, stackName, serviceName):
-        print "Executing upgradeRancherServices() method in RancherClient class in RancherClient.py\n"
+        print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
         projectUrlString = 'v2-beta/projects?name=%s' % projectName
         r = self.request.get(projectUrlString, contentType = 'application/json')
-        response = json.loads(r.response)
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
         stacksLink = response['data'][0]['links']['stacks']
         print "Stacks link is %s\n" % stacksLink
 
         stacksUrlString = "%s?name=%s" % (urlparse(stacksLink).path[1:], stackName)
         r = self.request.get(stacksUrlString, contentType = 'application/json')
-        response = json.loads(r.response)
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
         servicesLink = response['data'][0]['links']['services']
         print "Services link is %s\n" % servicesLink
 
+ # Note service filtering does not work; this call returns a collection of all services in the stack.
         servicesUrlString = "%s?name=%s" % (urlparse(servicesLink).path[1:], serviceName)
         r = self.request.get(servicesUrlString, contentType = 'application/json')
-        response = json.loads(r.response)
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
         for service in response['data']:
+            if service['name'] != serviceName:
+                continue
             print "%s:  %s\n" % (service['name'], service['state'])
             selfLink = service['links']['self']
             selfUrlString = urlparse(selfLink).path[1:]
             upgradeLink = service['actions']['upgrade']
             print "Upgrading with upgradeLink %s\n" % upgradeLink
-#           print "service['upgrade'] = %s" % service['upgrade']
-#           print "service['upgrade']['inServiceStrategy'] = %s" % service['upgrade']['inServiceStrategy']
 
             if service['upgrade']:       
                 upgradeConfig = service['upgrade']['inServiceStrategy']
@@ -66,19 +79,21 @@ class RancherClient(object):
 
             upgradeRequestBody = {"inServiceStrategy":upgradeConfig,"toServiceStrategy": None}
        
-#           upgradeUrlString = "%s?%s" % (urlparse.urlparse(upgradeLink).path[1:], urlparse.urlparse(upgradeLink).query)
             upgradeUrlString = urlunparse(('', '', urlparse(upgradeLink).path, '', urlparse(upgradeLink).query, ''))[1:]
             print "upgradeUrlString = %s\n" % upgradeUrlString
             r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType = 'application/json')
+            if r.getStatus() not in HTTP_SUCCESS:
+                self.throw_error(r)
         
-            if self.getStateAfterTransitioning(selfUrlString) == 'active':
-                print "Service is active"
+            if self.getStateAfterTransitioning(selfUrlString) == 'upgraded':
+                print "Service has been upgraded"
             else:
-                print "Service is not active; do rollback\n"
+                print "Service has not been upgraded; do rollback\n"
 
     # End upgradeRancherServices
 
     def getStateAfterTransitioning(self, serviceUrlString):
+        print "Executing method getStateAfterTransitioning() in class RancherClient class in file RancherClient.py\n"
         r = self.request.get(serviceUrlString, contentType = 'application/json')
         response = json.loads(r.response)
         serviceTransitioning = response['transitioning']
@@ -88,10 +103,21 @@ class RancherClient(object):
             pollCount = pollCount + 1
             print "Transitioning, waiting... %d\n" % pollCount
             r = self.request.get(serviceUrlString, contentType = 'application/json')
-            response = json.loads(r.response)
+            if r.getStatus() in HTTP_SUCCESS:
+                response = json.loads(r.response)
+            else:
+                self.throw_error(r)
             serviceTransitioning = response['transitioning']
         r = self.request.get(serviceUrlString, contentType = 'application/json')
-        response = json.loads(r.response)
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
         return response['state']
+
+    def throw_error(self, response):
+        print "Executing method throw_error() in class RancherClient in file RancherClient.py\n"
+        print "Error from Rancher, HTTP Return: %s\n" % (response.getStatus())
+        sys.exit(1)
         
 # End RancherClient
