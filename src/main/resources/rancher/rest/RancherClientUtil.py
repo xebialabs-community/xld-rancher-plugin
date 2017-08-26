@@ -8,20 +8,12 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-print "Executing upgrade.py"
+from rancher.rest.RancherClient import RancherClient
 
-# from urlparse import urlunparse
-from rancher.rest.RancherClientUtil import RancherClientUtil
+class RancherClientUtil(object):
 
-# host     = deployed.container.host
-# port     = deployed.container.restPort
-
-# accessKey = deployed.container.accessKey
-# secretKey = deployed.container.secretKey
-
-# url = urlunparse(('http', '%s:%s' % (host, port), '', '', '', ''))
-
-rancherClient = RancherClientUtil.createRancherClient(deployed.container)
-
-rancherClient.upgradeRancherServices(deployed.projectName, deployed.stackName, deployed.serviceName)
-
+    @staticmethod
+    def createRancherClient(container):
+        print "Executing createRancherClient() method in RancherClientUtil class in RancherClientUtil.py\n"
+        client = RancherClient.createClient(container.getProperty("host"), container.getProperty("restPort"), container.getProperty("accessKey"), container.getProperty("secretKey"))
+        return client

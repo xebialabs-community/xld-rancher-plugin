@@ -19,16 +19,22 @@ from http.http_request import HttpRequest
 from http.http_response import HttpResponse
 from http.http_entity_builder import HttpEntityBuilder
 
-class RancherClient( object ):
-    def __init__(self, url, username, password):
-      self.url = url
-      if url.endswith('/'):
-          self.url = url[:-1]
-      self.http_connection = HttpConnection(url, username, password)
-      self.request = HttpRequest(self.http_connection, username, password)
+class RancherClient(object):
+    def __init__(self, host, port, username, password):
+        print "Executing __init__() method in RancherClient class in RancherClient.py\n"
+#       self.http_connection = HttpConnection("http://%s:%s" % (host, port), username, password)
+        self.baseUrl = urlunparse(('http', '%s:%s' % (host,port), '', '', '', ''))
+        self.http_connection = HttpConnection(self.baseUrl, username, password)
+        self.request = HttpRequest(self.http_connection, username, password)
   # End __init__
 
+    @staticmethod
+    def createClient(host, port, username, password):
+        print "Executing createClient() method in RancherClient class in RancherClient.py\n"
+        return RancherClient(host, port, username, password)
+
     def upgradeRancherServices(self, projectName, stackName, serviceName):
+        print "Executing upgradeRancherServices() method in RancherClient class in RancherClient.py\n"
         projectUrlString = 'v2-beta/projects?name=%s' % projectName
         r = self.request.get(projectUrlString, contentType = 'application/json')
         response = json.loads(r.response)
