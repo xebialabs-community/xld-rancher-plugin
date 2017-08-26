@@ -11,7 +11,8 @@
 import base64
 import json
 import time
-import urlparse
+from urlparse import urlparse
+from urlparse import urlunparse
 
 from http.http_connection import HttpConnection
 from http.http_request import HttpRequest
@@ -34,23 +35,23 @@ class RancherClient( object ):
         stacksLink = response['data'][0]['links']['stacks']
         print "Stacks link is %s\n" % stacksLink
 
-        stacksUrlString = "%s?name=%s" % (urlparse.urlparse(stacksLink).path[1:], stackName)
+        stacksUrlString = "%s?name=%s" % (urlparse(stacksLink).path[1:], stackName)
         r = self.request.get(stacksUrlString, contentType = 'application/json')
         response = json.loads(r.response)
         servicesLink = response['data'][0]['links']['services']
         print "Services link is %s\n" % servicesLink
 
-        servicesUrlString = "%s?name=%s" % (urlparse.urlparse(servicesLink).path[1:], serviceName)
+        servicesUrlString = "%s?name=%s" % (urlparse(servicesLink).path[1:], serviceName)
         r = self.request.get(servicesUrlString, contentType = 'application/json')
         response = json.loads(r.response)
         for service in response['data']:
             print "%s:  %s\n" % (service['name'], service['state'])
             selfLink = service['links']['self']
-            selfUrlString = urlparse.urlparse(selfLink).path[1:]
+            selfUrlString = urlparse(selfLink).path[1:]
             upgradeLink = service['actions']['upgrade']
             print "Upgrading with upgradeLink %s\n" % upgradeLink
-            # print "service['upgrade'] = %s" % service['upgrade']
-            # print "service['upgrade']['inServiceStrategy'] = %s" % service['upgrade']['inServiceStrategy']
+#           print "service['upgrade'] = %s" % service['upgrade']
+#           print "service['upgrade']['inServiceStrategy'] = %s" % service['upgrade']['inServiceStrategy']
 
             if service['upgrade']:       
                 upgradeConfig = service['upgrade']['inServiceStrategy']
@@ -59,8 +60,9 @@ class RancherClient( object ):
 
             upgradeRequestBody = {"inServiceStrategy":upgradeConfig,"toServiceStrategy": None}
        
-            upgradeUrlString = "%s?%s" % (urlparse.urlparse(upgradeLink).path[1:], urlparse.urlparse(upgradeLink).query)
-            print upgradeUrlString
+#           upgradeUrlString = "%s?%s" % (urlparse.urlparse(upgradeLink).path[1:], urlparse.urlparse(upgradeLink).query)
+            upgradeUrlString = urlunparse(('', '', urlparse(upgradeLink).path, '', urlparse(upgradeLink).query, ''))[1:]
+            print "upgradeUrlString = %s\n" % upgradeUrlString
             r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType = 'application/json')
         
             if self.getStateAfterTransitioning(selfUrlString) == 'active':

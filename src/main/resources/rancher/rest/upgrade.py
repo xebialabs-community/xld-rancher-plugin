@@ -10,6 +10,7 @@
 
 print "Executing upgrade.py"
 
+from urlparse import urlunparse
 from rancher.rest.RancherClient import RancherClient
 
 host     = deployed.container.host
@@ -18,7 +19,7 @@ port     = deployed.container.restPort
 accessKey = deployed.container.accessKey
 secretKey = deployed.container.secretKey
 
-url = "http://%s:%s" % (host, port)
+url = urlunparse(('http', '%s:%s' % (host, port), '', '', '', ''))
 rancherClient = RancherClient( url, accessKey, secretKey)
 
 rancherClient.upgradeRancherServices(deployed.projectName, deployed.stackName, deployed.serviceName)
