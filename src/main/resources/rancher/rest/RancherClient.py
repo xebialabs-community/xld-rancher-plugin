@@ -36,6 +36,15 @@ class RancherClient(object):
         print "Executing method createClient() in class RancherClient class in file RancherClient.py\n"
         return RancherClient(host, port, username, password)
 
+    def createStack(self, projectId, stackName, dockerCompose, rancherCompose):
+        print "Executing method createStack() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (projectId, stackName)
+        createStackUrlString = 'v2-beta/projects/%s/stacks?name=%s&dockerCompose=%s&rancherCompose=%s' % (projectId, stackName, dockerCompose, rancherCompose)
+        r = self.request.post(createStackUrlString, None, contentType='application/json')
+        if r.getStatus() in HTTP_SUCCESS:
+            return json.loads(r.getResponse())
+        else:
+            self.throw_error(r)
+
     def upgradeRancherServices(self, projectName, stackName, serviceName):
         print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
         projectUrlString = 'v2-beta/projects?name=%s' % projectName
@@ -66,7 +75,10 @@ class RancherClient(object):
         for service in response['data']:
             if service['name'] != serviceName:
                 continue
-            print "%s:  %s\n" % (service['name'], service['state'])
+            if service['state'] != 'active':
+                print "%s cannot be upgraded because its current state is %s" % (service['name'], service['state'])
+                sys.exit(1)
+            print "Upgrading %s, state was %s\n" % (service['name'], service['state'])
             selfLink = service['links']['self']
             selfUrlString = urlparse(selfLink).path[1:]
             upgradeLink = service['actions']['upgrade']
@@ -81,7 +93,7 @@ class RancherClient(object):
        
             upgradeUrlString = urlunparse(('', '', urlparse(upgradeLink).path, '', urlparse(upgradeLink).query, ''))[1:]
             print "upgradeUrlString = %s\n" % upgradeUrlString
-            r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType = 'application/json')
+            r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType='application/json')
             if r.getStatus() not in HTTP_SUCCESS:
                 self.throw_error(r)
         

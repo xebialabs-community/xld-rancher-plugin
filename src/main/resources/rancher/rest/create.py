@@ -9,9 +9,23 @@
 #
 
 import os
+import sys
+from zipfile import ZipFile
+
+from rancher.rest.RancherClientUtil import RancherClientUtil
 
 print "Executing create.py"
-cwd =  os.getcwd()
-print cwd
-print os.listdir(cwd)
+
+rancherClient = RancherClientUtil.createRancherClient(deployed.container)
+
+composeZip = ZipFile(deployed.file.path)
+
+with composeZip.open("docker-compose.yml") as dockerComposeFile:
+  dockerCompose = dockerComposeFile.read()
+
+with composeZip.open("rancher-compose.yml") as rancherComposeFile:
+  rancherCompose = rancherComposeFile.read()
+
+# Use project/environment id as project name for now.  TO-DO:  Add projectId lookup to RancherCompose.py.
+rancherClient.createStack(deployed.projectName, deployed.stackName, dockerCompose, rancherCompose)
 
