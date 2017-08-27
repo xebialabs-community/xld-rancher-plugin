@@ -7,7 +7,7 @@ deploy:
   provider: releases
   api_key:
     secure: by7GjfP11OIdIPr8RBODdWZHuEjYrbs3ImpKVJ2cPkb7E5r/xGXBEKEBFBo8uRimNj09EWM5Rp29tdBXhVSvqIztp4W6jT80TLXksdbEB1eVIG1t/iKHDOS99PNj9YhU1BW/1JUm6MnZZxMvtNkbZvCevgLWdA/4n+jJZk6hLZ3gz89o48ghGod0GOYL0gBbCQzxCaJU1hQ0t8Wz653A5hDvGTHIbqnNo9BDxCDQ/5xMNezZcUq02WrlOQsjOHW3eo2cN8+f7WxQTbDbPG1YFWv17XFSjQf0QNxJFK5Sw9WjFG4jBdcq8vWdgUxNxfqEilfbVuEAHCgi7QswTwBslrYXgcQJodC3Z4AMHsQ3iK2BMOkZdiFA6ZDpItqEEovu7EOer3MSqKpimXNOpKjSMDSKylGv+HxgC2Gv1Xv66zmljL/YfaS9R8yresDyi6rAb+6KvFnHPdf1BAdpk8MJygNiDCDOlVdCIluCVnPY7RY8YRdG9NvxRslpUSlGgCzADzWb14DbLQM4eknMRT1fwQE+S+3XxvRIVRsxtfqiNuEZUN02Q6y0w6xQNZ0EukMU3IdRIAVrkFif1WgLQkoqGNj3AqMfVeWzTpbhqYMfzHdwTqX7YTrGDxqvTM1EIeRpr3l5y72Np3IFI4Xge2xABdUhFAGqLuzejQmKWbB6cmU=
-  file: build/distributions/xld-rancher-plugin-1.1.0.xldp
+  file: build/distributions/xld-rancher-plugin-1.2.0.xldp
   skip_cleanup: true
   on:
     all_branches: true
