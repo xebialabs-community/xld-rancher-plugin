@@ -36,24 +36,64 @@ class RancherClient(object):
         print "Executing method createClient() in class RancherClient class in file RancherClient.py\n"
         return RancherClient(host, port, username, password)
 
-    def createStack(self, projectId, stackName, dockerCompose, rancherCompose):
-        print "Executing method createStack() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (projectId, stackName)
-        createStackUrlString = 'v2-beta/projects/%s/stacks?name=%s&dockerCompose=%s&rancherCompose=%s' % (projectId, stackName, dockerCompose, rancherCompose)
+    def validateListLength(self, vList, uniqueMatchOnly):
+        if not vList:
+            print "No matches found.  Aborting this operation.\n"
+            sys.exit(1)
+
+        if uniqueMatchOnly and len(vList) > 1:
+            print "Nonunique matches found.  Aborting this operation.\n"
+            sys.exit(1)
+
+    def lookupProjectByName(self, projectName):
+        print "Executing method lookupProjectByName() in class RancherClient in file RancherClient.py with parameters projectName=%s" % (projectName)
+        projectUrlLookup = "v2-beta/projects?name=%s" % projectName
+        r = self.request.get(projectUrlLookup, contentType = 'application/json')
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
+        projectList = []
+        for project in response['data']:
+            if project['name'] == projectName:
+                projectList.append(project)
+        return projectList
+
+    def lookupStackByName(self, projectId, stackName):
+        print "Executing method lookupStackByName() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (projectId, stackName)
+        projectUrlLookup = 'v2-beta/projects?name=%s' % projectName
+        r = self.request.get(projectUrlLookup, contentType = 'application/json')
+        if r.getStatus() in HTTP_SUCCESS:
+            response = json.loads(r.response)
+        else:
+            self.throw_error(r)
+        projectList = []
+        for project in response['data']:
+            if project['name'] == projectName:
+                projectList.append(project)
+        return projectList
+
+    def createStack(self, project, stackName, dockerCompose, rancherCompose):
+        print "Executing method createStack() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (project['id'], stackName)
+        createStackUrlString = 'v2-beta/projects/%s/stacks?name=%s&dockerCompose=%s&rancherCompose=%s' % (project['id'], stackName, dockerCompose, rancherCompose)
         r = self.request.post(createStackUrlString, None, contentType='application/json')
         if r.getStatus() in HTTP_SUCCESS:
             return json.loads(r.getResponse())
         else:
             self.throw_error(r)
 
-    def upgradeRancherServices(self, projectName, stackName, serviceName):
+#   def upgradeRancherServices(self, projectName, stackName, serviceName):
+#        print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
+#        projectUrlString = 'v2-beta/projects?name=%s' % projectName
+#        r = self.request.get(projectUrlString, contentType = 'application/json')
+#        if r.getStatus() in HTTP_SUCCESS:
+#            response = json.loads(r.response)
+#        else:
+#            self.throw_error(r)
+
+    def upgradeRancherServices(self, project, stackName, serviceName):
         print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
-        projectUrlString = 'v2-beta/projects?name=%s' % projectName
-        r = self.request.get(projectUrlString, contentType = 'application/json')
-        if r.getStatus() in HTTP_SUCCESS:
-            response = json.loads(r.response)
-        else:
-            self.throw_error(r)
-        stacksLink = response['data'][0]['links']['stacks']
+        stacksLink = project['links']['stacks']
         print "Stacks link is %s\n" % stacksLink
 
         stacksUrlString = "%s?name=%s" % (urlparse(stacksLink).path[1:], stackName)

@@ -24,6 +24,7 @@
         <property name="projectName" />
         <property name="stackName" />
         <property name="serviceName" />
+        <property name="uniqueMatchOnly" kind="boolean" default="false" required="false" />
     </type>
 
     <type type="rancher.RancherCliClient" extends="udm.BaseContainer">

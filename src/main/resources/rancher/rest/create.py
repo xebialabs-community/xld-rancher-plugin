@@ -26,6 +26,11 @@ with composeZip.open("docker-compose.yml") as dockerComposeFile:
 with composeZip.open("rancher-compose.yml") as rancherComposeFile:
   rancherCompose = rancherComposeFile.read()
 
-# Use project/environment id as project name for now.  TO-DO:  Add projectId lookup to RancherCompose.py.
-rancherClient.createStack(deployed.projectName, deployed.stackName, dockerCompose, rancherCompose)
+projectList = rancherClient.lookupProjectByName(deployed.projectName)
+
+rancherClient.validateListLength(projectList, deployed.uniqueMatchOnly)
+
+for project in projectList:
+  print "Target project id is %s\n" % project['id']
+  rancherClient.createStack(project, deployed.stackName, dockerCompose, rancherCompose)
 

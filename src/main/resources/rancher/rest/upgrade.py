@@ -10,9 +10,16 @@
 
 print "Executing upgrade.py"
 
+import sys
 from rancher.rest.RancherClientUtil import RancherClientUtil
 
 rancherClient = RancherClientUtil.createRancherClient(deployed.container)
 
-rancherClient.upgradeRancherServices(deployed.projectName, deployed.stackName, deployed.serviceName)
+projectList = rancherClient.lookupProjectByName(deployed.projectName)
+
+rancherClient.validateListLength(projectList, deployed.uniqueMatchOnly)
+
+for project in projectList:
+  print "Target project id is %s\n" % project['id']
+  rancherClient.upgradeRancherServices(project, deployed.stackName, deployed.serviceName)
 
