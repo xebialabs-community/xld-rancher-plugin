@@ -32,9 +32,9 @@ Deploy the rancher.ComposeArtifact to the rancher.RancherCliClient or the ranche
 
 * DESTROY
 
-** REST **
+**REST**
 
-* CREATE
+* CREATE -- implemented to create a stack
 
 * MODIFY
 
