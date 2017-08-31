@@ -25,28 +25,33 @@ HTTP_SUCCESS = sets.Set([200,201,202])
 
 class RancherClient(object):
     def __init__(self, host, port, username, password):
-        print "Executing method __init__() in class RancherClient in file RancherClient.py\n"
+    #   print "Executing method __init__() in class RancherClient in file RancherClient.py\n"
         self.baseUrl = urlunparse(('http', '%s:%s' % (host,port), '', '', '', ''))
         self.http_connection = HttpConnection(self.baseUrl, username, password)
         self.request = HttpRequest(self.http_connection, username, password)
-  # End __init__
+
+    # End __init__
 
     @staticmethod
     def createClient(host, port, username, password):
-        print "Executing method createClient() in class RancherClient class in file RancherClient.py\n"
+    #   print "Executing method createClient() in class RancherClient class in file RancherClient.py\n"
         return RancherClient(host, port, username, password)
 
+    # End createClient
+
     def validateListLength(self, vList, uniqueMatchOnly):
+    #   print "Executing method validateListLength() in class RancherClient class in file RancherClient.py\n"
         if not vList:
             print "No matches found.  Aborting this operation.\n"
             sys.exit(1)
-
         if uniqueMatchOnly and len(vList) > 1:
             print "Nonunique matches found.  Aborting this operation.\n"
             sys.exit(1)
 
+    # End validateListLength
+
     def lookupProjectByName(self, projectName):
-        print "Executing method lookupProjectByName() in class RancherClient in file RancherClient.py with parameters projectName=%s" % (projectName)
+    #   print "Executing method lookupProjectByName() in class RancherClient in file RancherClient.py with parameters projectName=%s" % (projectName)
         projectUrlLookup = "v2-beta/projects?name=%s" % projectName
         r = self.request.get(projectUrlLookup, contentType = 'application/json')
         if r.getStatus() in HTTP_SUCCESS:
@@ -59,22 +64,27 @@ class RancherClient(object):
                 projectList.append(project)
         return projectList
 
-    def lookupStackByName(self, projectId, stackName):
-        print "Executing method lookupStackByName() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (projectId, stackName)
-        projectUrlLookup = 'v2-beta/projects?name=%s' % projectName
-        r = self.request.get(projectUrlLookup, contentType = 'application/json')
+    # End lookupProjectByName
+
+    def lookupStackByName(self, project, stackName):
+    #   print "Executing method lookupStackByName() in class RancherClient in file RancherClient.py with parameters project=%s, stackName=%s\n" % (project['id'], stackName)
+        stacksLink = project['links']['stacks']
+        stacksUrlString = "%s?name=%s" % (urlparse(stacksLink).path[1:], stackName)
+        r = self.request.get(stacksUrlString, contentType = 'application/json')
         if r.getStatus() in HTTP_SUCCESS:
             response = json.loads(r.response)
         else:
             self.throw_error(r)
-        projectList = []
-        for project in response['data']:
-            if project['name'] == projectName:
-                projectList.append(project)
-        return projectList
+        stackList = []
+        for stack in response['data']:
+            if stack['name'] == stackName:
+                stackList.append(stack)
+        return stackList
+
+    # End lookupStackByName   
 
     def createStack(self, project, stackName, dockerCompose, rancherCompose):
-        print "Executing method createStack() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (project['id'], stackName)
+    #   print "Executing method createStack() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (project['id'], stackName)
         createStackUrlString = 'v2-beta/projects/%s/stacks?name=%s&dockerCompose=%s&rancherCompose=%s' % (project['id'], stackName, dockerCompose, rancherCompose)
         r = self.request.post(createStackUrlString, None, contentType='application/json')
         if r.getStatus() in HTTP_SUCCESS:
@@ -82,70 +92,48 @@ class RancherClient(object):
         else:
             self.throw_error(r)
 
-#   def upgradeRancherServices(self, projectName, stackName, serviceName):
-#        print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
-#        projectUrlString = 'v2-beta/projects?name=%s' % projectName
-#        r = self.request.get(projectUrlString, contentType = 'application/json')
-#        if r.getStatus() in HTTP_SUCCESS:
-#            response = json.loads(r.response)
-#        else:
-#            self.throw_error(r)
+    # End createStack
 
-    def upgradeRancherServices(self, project, stackName, serviceName):
-        print "Executing method upgradeRancherServices() in class RancherClient class in file RancherClient.py\n"
-        stacksLink = project['links']['stacks']
-        print "Stacks link is %s\n" % stacksLink
-
-        stacksUrlString = "%s?name=%s" % (urlparse(stacksLink).path[1:], stackName)
-        r = self.request.get(stacksUrlString, contentType = 'application/json')
-        if r.getStatus() in HTTP_SUCCESS:
-            response = json.loads(r.response)
-        else:
-            self.throw_error(r)
-        servicesLink = response['data'][0]['links']['services']
-        print "Services link is %s\n" % servicesLink
-
- # Note service filtering does not work; this call returns a collection of all services in the stack.
-        servicesUrlString = "%s?name=%s" % (urlparse(servicesLink).path[1:], serviceName)
+    def getStackServices(self, stack):
+    #   print "Executing method getStackServices() in class RancherClient in file RancherClient.py with parameters projectId=%s, stackName=%s" % (project['id'], stackName)
+        servicesLink = stack['links']['services']
+        servicesUrlString = urlparse(servicesLink).path[1:]
         r = self.request.get(servicesUrlString, contentType = 'application/json')
         if r.getStatus() in HTTP_SUCCESS:
             response = json.loads(r.response)
         else:
             self.throw_error(r)
-        for service in response['data']:
-            if service['name'] != serviceName:
-                continue
-            if service['state'] != 'active':
-                print "%s cannot be upgraded because its current state is %s" % (service['name'], service['state'])
-                sys.exit(1)
-            print "Upgrading %s, state was %s\n" % (service['name'], service['state'])
-            selfLink = service['links']['self']
-            selfUrlString = urlparse(selfLink).path[1:]
-            upgradeLink = service['actions']['upgrade']
-            print "Upgrading with upgradeLink %s\n" % upgradeLink
+        return response['data']
 
-            if service['upgrade']:       
-                upgradeConfig = service['upgrade']['inServiceStrategy']
-            else:
-                upgradeConfig = None
+    # End getStackServices
 
-            upgradeRequestBody = {"inServiceStrategy":upgradeConfig,"toServiceStrategy": None}
-       
-            upgradeUrlString = urlunparse(('', '', urlparse(upgradeLink).path, '', urlparse(upgradeLink).query, ''))[1:]
-            print "upgradeUrlString = %s\n" % upgradeUrlString
-            r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType='application/json')
-            if r.getStatus() not in HTTP_SUCCESS:
-                self.throw_error(r)
-        
-            if self.getStateAfterTransitioning(selfUrlString) == 'upgraded':
-                print "Service has been upgraded"
-            else:
-                print "Service has not been upgraded; do rollback\n"
+    def upgradeRancherService(self, service):
+    #   print "Executing method upgradeRancherService() in class RancherClient class in file RancherClient.py\n"
+        if service['state'] != 'active':
+            print "%s cannot be upgraded because its current state is %s" % (service['name'], service['state'])
+            sys.exit(1)
+        print "Upgrading %s, state was %s\n" % (service['name'], service['state'])
+        upgradeLink = service['actions']['upgrade']
+        if service['upgrade']:       
+            upgradeConfig = service['upgrade']['inServiceStrategy']
+        else:
+            upgradeConfig = None
+        upgradeRequestBody = {"inServiceStrategy":upgradeConfig,"toServiceStrategy": None}
+        upgradeUrlString = urlunparse(('', '', urlparse(upgradeLink).path, '', urlparse(upgradeLink).query, ''))[1:]
+        r =self.request.post(upgradeUrlString, HttpEntityBuilder.create_string_entity(json.dumps(upgradeRequestBody)), contentType='application/json')
+        if r.getStatus() not in HTTP_SUCCESS:
+            self.throw_error(r)
+        if self.getStateAfterTransitioning(service) == 'upgraded':
+            print "Service %s has been upgraded\n" % service['id']
+        else:
+            print "Service %s has not been upgraded; do rollback\n" % service['id']
 
     # End upgradeRancherServices
 
-    def getStateAfterTransitioning(self, serviceUrlString):
-        print "Executing method getStateAfterTransitioning() in class RancherClient class in file RancherClient.py\n"
+    def getStateAfterTransitioning(self, service):
+    #   print "Executing method getStateAfterTransitioning() in class RancherClient class in file RancherClient.py\n"
+        serviceLink = service['links']['self']
+        serviceUrlString = urlparse(serviceLink).path[1:]
         r = self.request.get(serviceUrlString, contentType = 'application/json')
         response = json.loads(r.response)
         serviceTransitioning = response['transitioning']
@@ -167,9 +155,13 @@ class RancherClient(object):
             self.throw_error(r)
         return response['state']
 
+    # End getStateAfterTransitioning
+
     def throw_error(self, response):
-        print "Executing method throw_error() in class RancherClient in file RancherClient.py\n"
+    #   print "Executing method throw_error() in class RancherClient in file RancherClient.py\n"
         print "Error from Rancher, HTTP Return: %s\n" % (response.getStatus())
         sys.exit(1)
+
+    # End throw_error
         
 # End RancherClient

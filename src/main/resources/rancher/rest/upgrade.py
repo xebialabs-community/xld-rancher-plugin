@@ -21,5 +21,13 @@ rancherClient.validateListLength(projectList, deployed.uniqueMatchOnly)
 
 for project in projectList:
   print "Target project id is %s\n" % project['id']
-  rancherClient.upgradeRancherServices(project, deployed.stackName, deployed.serviceName)
+  stackList = rancherClient.lookupStackByName(project, deployed.stackName)
+
+for stack in stackList:
+  print "Target stack id is %s\n" % stack['id']
+  servicesList = rancherClient.getStackServices(stack)
+  for service in servicesList:
+    if service['name'] in deployed.services:
+    	print "Target service id is %s\n" % service['id']
+    	rancherClient.upgradeRancherService(service)
 

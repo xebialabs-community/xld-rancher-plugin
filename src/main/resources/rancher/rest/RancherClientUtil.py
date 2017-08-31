@@ -14,6 +14,10 @@ class RancherClientUtil(object):
 
     @staticmethod
     def createRancherClient(container):
-        print "Executing createRancherClient() method in RancherClientUtil class in RancherClientUtil.py\n"
+    #   print "Executing method createRancherClient() in class RancherClientUtil in RancherClientUtil.py\n"
         client = RancherClient.createClient(container.getProperty("host"), container.getProperty("restPort"), container.getProperty("accessKey"), container.getProperty("secretKey"))
         return client
+
+    # End createRancherClient
+
+# End RancherClientUtil
