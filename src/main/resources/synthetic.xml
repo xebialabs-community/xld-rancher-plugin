@@ -23,7 +23,7 @@
         <generate-deployable type="rancher.ComposeArchive" extends="udm.BaseDeployableArchiveArtifact" />
         <property name="projectName" />
         <property name="stackName" />
-        <property name="services" kind="set_of_string" description="Set of service names for upgrade" />
+        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
         <property name="uniqueMatchOnly" kind="boolean" default="false" required="false" />
     </type>
 
