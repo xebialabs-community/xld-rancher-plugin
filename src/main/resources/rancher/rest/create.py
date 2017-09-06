@@ -32,5 +32,6 @@ rancherClient.validateListLength(projectList, deployed.uniqueMatchOnly)
 
 for project in projectList:
   print "Target project id is %s\n" % project['id']
-  rancherClient.createStack(project, deployed.stackName, dockerCompose, rancherCompose)
+  stack = rancherClient.createStack(project, deployed.stackName, dockerCompose, rancherCompose)
+  rancherClient.activateServices(stack)
 

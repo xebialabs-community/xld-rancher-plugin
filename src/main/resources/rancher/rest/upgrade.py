@@ -29,5 +29,5 @@ for stack in stackList:
   for service in servicesList:
     if service['name'] in deployed.serviceNames:
     	print "Target service id is %s\n" % service['id']
-    	rancherClient.upgradeRancherService(service)
+    	rancherClient.upgradeService(service)
 
