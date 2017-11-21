@@ -12,7 +12,7 @@
 
 ## Preface
 
-This document describes the functionality provided by the XL Deploy|Release Description|Interface plugin.
+This document describes the functionality provided by the XL Deploy Rancher plugin.
 
 See the [XL Deploy reference manual](https://docs.xebialabs.com/xl-deploy) for background information on XL Deploy and deployment automation concepts.  
 
@@ -34,31 +34,37 @@ This XL Deploy plugin creates and upgrades Rancher stacks.
 
 ### Configure the CLI interface ###
 
-Set up a rancher.RancherCliClient object with Rancher server URL, access key and secret key.
+Set up a rancher.RancherCliClient object with Rancher server URL, access key, and secret key.  This object can be located under an overthere.Host object.
 
 ![Screenshot of RancherCliClient](images/RancherCliClient.png)
 
 ### Configure the REST interface ###
 
-Define a rancher.RancherRestClient object in the Infrastructure tree.  It can be located under the root node or any folder.  Set the host (DNS or IP), port, access key, and secret key.
+As an alternative to the CLI, you can define a rancher.RancherRestClient object in the Infrastructure tree.  It can be located under the root node or any folder.  Set the host (DNS or IP), port, access key, and secret key.
 
 ![Screenshot of RancherRestClient](images/RancherRestClient.png)
 
 ### Configure the Rancher Compose Archive
 
-To configure a rancher.ComposeArchive object for deployment:
+To configure a rancher.CliComposeArchive or rancher.RestComposeArchive object for deployment:
 
 * Create a docker-compose.yml file and a rancher-compose.yml file.  
 
 * Zip them into a single archive to be used as the artifact.
 
-* Specify the project and stack names.
+* Specify the project id or name.
 
-* Enter the names of the services that should be upgraded under a NOOP deployment.
+* Specify the stack name. 
 
-* Set the uniqueMatchOnly flag to true if the deployment should abort on multiple matches for the project and stack names.
+* Enter the names of the services that should be upgraded under a MODIFY or NOOP deployment.
 
-![Screenshot of ComposeArchive](images/ComposeArchive.png)
+* Set the force-upgrade and confirm-upgrade booleans for CLI upgrades.
+
+* Set the uniqueMatchOnly flag to true for REST deployments if the deployment should abort on multiple matches for the project and/or stack names.
+
+![Screenshot of CLI Compose Archive](images/CliComposeArchive.png)
+
+![Screenshot of REST Compose Archive](images/RestComposeArchive.png)
 
 ### Deploying ###
 
@@ -70,19 +76,15 @@ Deploy the rancher.ComposeArtifact to the rancher.RancherCliClient or to the ran
 
 * CREATE -- implemented to create a stack
 
-* MODIFY
+* MODIFY/NOOP -- implemented to upgrade the listed services
 
-* NOOP
-
-* DESTROY
+* DESTROY -- implemented to remove a stack
 
 **REST**
 
 * CREATE -- implemented to create a stack
 
-* MODIFY
-
-* NOOP  -- implemented to upgrade the listed services
+* MODIFY/NOOP -- implemented to upgrade the listed services
 
 * DESTROY
 

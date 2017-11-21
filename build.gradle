@@ -1,12 +1,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-  id "com.github.hierynomus.license" version "0.13.1"
+  id "com.github.hierynomus.license" version "0.14.0"
   id "com.xebialabs.xldp" version "1.0.5"
   id "java"
 }
 
-version = "1.2.3"
+version = "1.3.0"
 
 processResources.configure {
   filter ReplaceTokens, tokens: [
@@ -17,7 +17,7 @@ processResources.configure {
 
 license {
   header rootProject.file('License.md')
-  strictCheck false
+  strictCheck true
   ext.year = Calendar.getInstance().get(Calendar.YEAR)
   ext.name = 'XEBIALABS'
 }

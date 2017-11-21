@@ -12,21 +12,6 @@
 -->
 <synthetic xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd" xmlns="http://www.xebialabs.com/deployit/synthetic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <type type="rancher.RancherRestClient" extends="overthere.LocalHost">
-         <property name="host" required="true" />
-         <property name="restPort" required="true" />
-         <property name="accessKey" required="true" />
-         <property name="secretKey" required="true" password="true" />
-    </type>
-
-    <type type="rancher.RestDeployedComposeArchive" extends="udm.BaseDeployedArtifact" deployable-type="rancher.ComposeArchive" container-type="rancher.RancherRestClient">
-        <generate-deployable type="rancher.ComposeArchive" extends="udm.BaseDeployableArchiveArtifact" />
-        <property name="projectName" />
-        <property name="stackName" />
-        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
-        <property name="uniqueMatchOnly" kind="boolean" default="false" required="false" />
-    </type>
-
     <type type="rancher.RancherCliClient" extends="udm.BaseContainer">
         <property name="host" kind="ci" referenced-type="overthere.Host" as-containment="true" />
         <property name="cliPath" />
@@ -35,7 +20,35 @@
         <property name="secretKey" password="true" />
     </type>
 
-    <type type="rancher.CliDeployedComposeArchive" extends="udm.BaseDeployedArtifact" deployable-type="rancher.ComposeArchive" container-type="rancher.RancherCliClient" />
+    <type type="rancher.RancherRestClient" extends="overthere.LocalHost">
+         <property name="host" required="true" />
+         <property name="restPort" required="true" />
+         <property name="accessKey" required="true" />
+         <property name="secretKey" required="true" password="true" />
+    </type>
+
+    <type type="rancher.BaseComposeArchive" extends="udm.BaseDeployableArchiveArtifact" virtual="true">
+        <property name="textFileNamesRegex" default=".+\.yml" hidden="true" />
+    </type>
+
+    <type type="rancher.BaseDeployedComposeArchive" extends="udm.BaseDeployedArtifact" virtual="true" />
+
+    <type type="rancher.DeployedCliComposeArchive" extends="rancher.BaseDeployedComposeArchive" deployable-type="rancher.CliComposeArchive" container-type="rancher.RancherCliClient">
+        <generate-deployable type="rancher.CliComposeArchive" extends="rancher.BaseComposeArchive" />
+        <property name="projectId" />
+        <property name="stackName" />
+        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
+        <property name="forceUpgrade" kind="boolean" required="false" />
+        <property name="confirmUpgrade" kind="boolean" required="false" />
+    </type>
+
+    <type type="rancher.DeployedRestComposeArchive" extends="rancher.BaseDeployedComposeArchive" deployable-type="rancher.RestComposeArchive" container-type="rancher.RancherRestClient">
+        <generate-deployable type="rancher.RestComposeArchive" extends="rancher.BaseComposeArchive" />
+        <property name="projectName" />
+        <property name="stackName" />
+        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
+        <property name="uniqueMatchOnly" kind="boolean" default="false" required="false" />
+    </type>
 
     <!-- control task for config setup? -->
 

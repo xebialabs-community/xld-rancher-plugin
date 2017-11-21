@@ -12,38 +12,52 @@
 -->
 <rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
 
-  <rule name="rancher.CliDeployedComposeArchive.CREATE_MODIFY" scope="deployed">
+  <rule name="rancher.DeployedCliComposeArchive.CREATE" scope="deployed">
     <conditions>
-      <type>rancher.CliDeployedComposeArchive</type>
+      <type>rancher.DeployedCliComposeArchive</type>
       <operation>CREATE</operation>
-      <operation>MODIFY</operation>
     </conditions>
     <steps>
       <os-script>
-        <script>rancher/cli/compose</script>
+        <script>rancher/cli/create</script>
         <description>Run Rancher Compose</description>
         <order>60</order>
       </os-script>
     </steps>
   </rule>
 
-  <rule name="rancher.CliDeployedComposeArchive.DESTROY" scope="deployed">
+  <rule name="rancher.DeployedCliComposeArchive.UPGRADE" scope="deployed">
     <conditions>
-      <type>rancher.CliDeployedComposeArchive</type>
+      <type>rancher.DeployedCliComposeArchive</type>
+      <operation>MODIFY</operation>
+      <operation>NOOP</operation>
+    </conditions>
+    <steps>
+      <os-script>
+        <script>rancher/cli/upgrade</script>
+        <description>Run Rancher Upgrade</description>
+        <order>60</order>
+      </os-script>
+    </steps>
+  </rule>
+
+  <rule name="rancher.DeployedCliComposeArchive.DESTROY" scope="deployed">
+    <conditions>
+      <type>rancher.DeployedCliComposeArchive</type>
       <operation>DESTROY</operation>
     </conditions>
     <steps>
       <os-script>
-        <script>rancher/cli/remove</script>
+        <script>rancher/cli/destroy</script>
         <description>Run Rancher Remove</description>
         <order>40</order>
       </os-script>
     </steps>
   </rule>
 
-  <rule name="rancher.RestDeployedComposeArchive.CREATE" scope="deployed">
+  <rule name="rancher.DeployedRestComposeArchive.CREATE" scope="deployed">
     <conditions>
-      <type>rancher.RestDeployedComposeArchive</type>
+      <type>rancher.DeployedRestComposeArchive</type>
       <operation>CREATE</operation>
     </conditions>
     <steps>
@@ -55,23 +69,10 @@
     </steps>
   </rule>
 
-  <rule name="rancher.RestDeployedComposeArchive.MODIFY" scope="deployed">
+  <rule name="rancher.DeployedRestComposeArchive.UPGRADE" scope="deployed">
     <conditions>
-      <type>rancher.RestDeployedComposeArchive</type>
+      <type>rancher.DeployedRestComposeArchive</type>
       <operation>MODIFY</operation>
-    </conditions>
-    <steps>
-      <jython>
-        <order>60</order>
-        <description>Modify</description>
-        <script>rancher/rest/modify.py</script>
-      </jython>
-    </steps>
-  </rule>
-
-  <rule name="rancher.RestDeployedComposeArchive.NOOP" scope="deployed">
-    <conditions>
-      <type>rancher.RestDeployedComposeArchive</type>
       <operation>NOOP</operation>
     </conditions>
     <steps>
@@ -83,9 +84,9 @@
     </steps>
   </rule>
 
-  <rule name="rancher.RestDeployedComposeArchive.DESTROY" scope="deployed">
+  <rule name="rancher.DeployedRestComposeArchive.DESTROY" scope="deployed">
     <conditions>
-      <type>rancher.RestDeployedComposeArchive</type>
+      <type>rancher.DeployedRestComposeArchive</type>
       <operation>DESTROY</operation>
     </conditions>
     <steps>
@@ -98,4 +99,3 @@
   </rule>
 
 </rules>
-

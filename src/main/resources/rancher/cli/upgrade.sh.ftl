@@ -9,4 +9,7 @@
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-${previousDeployed.container.cliPath} rm --type stack ${previousDeployed.name}
+unzip ${deployed.file.path} -d .
+<#list deployed.serviceNames as serviceName>
+echo ${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name} ${serviceName}
+</#list>
