@@ -10,4 +10,4 @@
 
 -->
 unzip ${deployed.file.path} -d .
-${deployed.container.cliPath} up -d -s ${deployed.name}
+${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d -s ${deployed.name}
