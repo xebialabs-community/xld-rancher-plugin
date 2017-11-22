@@ -7,8 +7,6 @@ plugins {
   id "java"
 }
 
-release.scope="minor"
-
 if (!project.hasProperty('release.scope')) {
   project.ext['release.scope'] = 'patch'
 }
