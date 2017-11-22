@@ -27,26 +27,26 @@
          <property name="secretKey" required="true" password="true" />
     </type>
 
-    <type type="rancher.BaseComposeArchive" extends="udm.BaseDeployableArchiveArtifact" virtual="true">
-        <property name="textFileNamesRegex" default=".+\.yml" hidden="true" />
+    <type type="rancher.BaseDeployedComposeArchive" extends="udm.BaseDeployedArtifact" virtual="true">
+        <generate-deployable type="rancher.BaseComposeArchive" extends="udm.BaseDeployableArchiveArtifact" virtual="true" />
+        <property name="stackName" />
+        <property name="serviceNames" kind="set_of_string" required="false" description="Set of service names for upgrade" />
     </type>
 
-    <type type="rancher.BaseDeployedComposeArchive" extends="udm.BaseDeployedArtifact" virtual="true" />
+    <type-modification type="rancher.BaseComposeArchive">
+        <property name="textFileNamesRegex" default=".+\.yml" hidden="true" />
+    </type-modification>
 
     <type type="rancher.DeployedCliComposeArchive" extends="rancher.BaseDeployedComposeArchive" deployable-type="rancher.CliComposeArchive" container-type="rancher.RancherCliClient">
         <generate-deployable type="rancher.CliComposeArchive" extends="rancher.BaseComposeArchive" />
         <property name="projectId" />
-        <property name="stackName" />
-        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
-        <property name="forceUpgrade" kind="boolean" required="false" />
-        <property name="confirmUpgrade" kind="boolean" required="false" />
+        <property name="forceUpgrade" kind="boolean" default="false" required="false" />
+        <property name="confirmUpgrade" kind="boolean" default="false" required="false" />
     </type>
 
     <type type="rancher.DeployedRestComposeArchive" extends="rancher.BaseDeployedComposeArchive" deployable-type="rancher.RestComposeArchive" container-type="rancher.RancherRestClient">
         <generate-deployable type="rancher.RestComposeArchive" extends="rancher.BaseComposeArchive" />
         <property name="projectName" />
-        <property name="stackName" />
-        <property name="serviceNames" kind="set_of_string" description="Set of service names for upgrade" />
         <property name="uniqueMatchOnly" kind="boolean" default="false" required="false" />
     </type>
 

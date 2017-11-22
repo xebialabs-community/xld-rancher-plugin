@@ -10,6 +10,10 @@
 
 -->
 unzip ${deployed.file.path} -d .
-<#list deployed.serviceNames as serviceName>
-echo ${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name} ${serviceName}
-</#list>
+<#if deployed.serviceNames?has_content>
+  <#list deployed.serviceNames as serviceName>
+${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name} ${serviceName}
+  </#list>
+<#else>
+${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name}
+</#if>
