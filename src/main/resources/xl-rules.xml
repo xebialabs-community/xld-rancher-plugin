@@ -31,12 +31,29 @@
       <type>rancher.DeployedCliComposeArchive</type>
       <operation>MODIFY</operation>
       <operation>NOOP</operation>
+      <expression>not context.isRollback()</expression>
     </conditions>
     <steps>
       <os-script>
         <script>rancher/cli/upgrade</script>
         <description>Run Rancher Upgrade</description>
         <order>60</order>
+      </os-script>
+    </steps>
+  </rule>
+
+  <rule name="rancher.DeployedCliComposeArchive.ROLLBACK" scope="deployed">
+    <conditions>
+      <type>rancher.DeployedCliComposeArchive</type>
+      <operation>MODIFY</operation>
+      <operation>NOOP</operation>
+      <expression>context.isRollback()</expression>
+    </conditions>
+    <steps>
+      <os-script>
+        <script>rancher/cli/rollback</script>
+        <description>Run Rancher Rollback</description>
+        <order>40</order>
       </os-script>
     </steps>
   </rule>
