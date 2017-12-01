@@ -13,11 +13,14 @@
 <synthetic xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd" xmlns="http://www.xebialabs.com/deployit/synthetic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <type type="rancher.RancherCliClient" extends="udm.BaseContainer">
+        <!-- Required -->
         <property name="host" kind="ci" referenced-type="overthere.Host" as-containment="true" />
         <property name="cliPath" />
-        <property name="url" />
-        <property name="accessKey" />
-        <property name="secretKey" password="true" />
+        <property name="url" required="false" />
+        <!-- Rancher CLI global options -->
+        <property name="accessKey" required="false" />
+        <property name="secretKey" password="true" required="false" />
+        <property name="config" required="false" />
     </type>
 
     <type type="rancher.RancherRestClient" extends="overthere.LocalHost">
@@ -39,7 +42,13 @@
 
     <type type="rancher.DeployedCliComposeArchive" extends="rancher.BaseDeployedComposeArchive" deployable-type="rancher.CliComposeArchive" container-type="rancher.RancherCliClient">
         <generate-deployable type="rancher.CliComposeArchive" extends="rancher.BaseComposeArchive" />
+        <!-- Required -->
         <property name="projectId" />
+        <!-- Rancher CLI global options -->
+        <property name="wait" kind="boolean" required="false" />
+        <property name="waitTimeout" kind="integer" required="false" />
+        <property name="waitState" required="false" />
+        <!-- Optional -->
         <property name="forceUpgrade" kind="boolean" default="false" required="false" />
         <property name="confirmUpgrade" kind="boolean" default="false" required="false" />
     </type>

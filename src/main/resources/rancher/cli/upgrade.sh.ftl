@@ -12,8 +12,35 @@
 unzip ${deployed.file.path} -d .
 <#if deployed.serviceNames?has_content>
   <#list deployed.serviceNames as serviceName>
-${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name} ${serviceName}
+    <@compress single_line=true>
+${deployed.container.cliPath}
+<#if deployed.container.url??>--url ${deployed.container.url} </#if>
+<#if deployed.container.accessKey??>--access-key ${deployed.container.accessKey} </#if>
+<#if deployed.container.secretKey??>--secret-key ${deployed.container.secretKey} </#if>
+<#if deployed.container.config??>--config ${deployed.container.config} </#if>
+<#if deployed.wait>--wait </#if>
+<#if deployed.waitTimeout??>--wait-timeout ${deployed.waitTimeout} </#if>
+<#if deployed.waitState??>--wait-state ${deployed.waitState} </#if>
+up -d --upgrade
+<#if deployed.forceUpgrade>--force-upgrade </#if>
+<#if deployed.confirmUpgrade>--confirm-upgrade </#if>
+--stack ${deployed.name} ${serviceName}
+    </@compress>
+
   </#list>
 <#else>
-${deployed.container.cliPath} --url ${deployed.container.url} --access-key ${deployed.container.accessKey} --secret-key ${deployed.container.secretKey} up -d --upgrade <#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>--stack ${deployed.name}
+  <@compress single_line=true>
+${deployed.container.cliPath}
+<#if deployed.container.url??>--url ${deployed.container.url} </#if>
+<#if deployed.container.accessKey??>--access-key ${deployed.container.accessKey} </#if>
+<#if deployed.container.secretKey??>--secret-key ${deployed.container.secretKey} </#if>
+<#if deployed.container.config??>--config ${deployed.container.config} </#if>
+<#if deployed.wait>--wait </#if>
+<#if deployed.waitTimeout??>--wait-timeout ${deployed.waitTimeout} </#if>
+<#if deployed.waitState??>--wait-state ${deployed.waitState} </#if>
+up -d --upgrade
+<#if deployed.forceUpgrade>--force-upgrade </#if><#if deployed.confirmUpgrade>--confirm-upgrade </#if>
+--stack ${deployed.name}
+  </@compress>
+
 </#if>

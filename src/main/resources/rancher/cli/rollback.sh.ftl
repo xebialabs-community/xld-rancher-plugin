@@ -12,8 +12,30 @@
 unzip ${previousDeployed.file.path} -d .
 <#if previousDeployed.serviceNames?has_content>
   <#list previousDeployed.serviceNames as serviceName>
-${previousDeployed.container.cliPath} --url ${previousDeployed.container.url} --access-key ${previousDeployed.container.accessKey} --secret-key ${previousDeployed.container.secretKey} up -d --rollback --stack ${previousDeployed.name} ${serviceName}
+    <@compress single_line=true>
+${previousDeployed.container.cliPath}
+<#if previousDeployed.container.url??>--url ${previousDeployed.container.url} </#if>
+<#if previousDeployed.container.accessKey??>--access-key ${previousDeployed.container.accessKey} </#if>
+<#if previousDeployed.container.secretKey??>--secret-key ${previousDeployed.container.secretKey} </#if>
+<#if previousDeployed.container.config??>--config ${previousDeployed.container.config} </#if>
+<#if previousDeployed.wait>--wait </#if>
+<#if previousDeployed.waitTimeout??>--wait-timeout ${previousDeployed.waitTimeout} </#if>
+<#if previousDeployed.waitState??>--wait-state ${previousDeployed.waitState} </#if>
+up -d --rollback --stack ${previousDeployed.name} ${serviceName}
+    </@compress>
+
   </#list>
 <#else>
-${previousDeployed.container.cliPath} --url ${previousDeployed.container.url} --access-key ${previousDeployed.container.accessKey} --secret-key ${previousDeployed.container.secretKey} up -d --rollback --stack ${previousDeployed.name}
+<@compress single_line=true>
+${previousDeployed.container.cliPath}
+<#if previousDeployed.container.url??>--url ${previousDeployed.container.url} </#if>
+<#if previousDeployed.container.accessKey??>--access-key ${previousDeployed.container.accessKey} </#if>
+<#if previousDeployed.container.secretKey??>--secret-key ${previousDeployed.container.secretKey} </#if>
+<#if previousDeployed.container.config??>--config ${previousDeployed.container.config} </#if>
+<#if previousDeployed.wait>--wait </#if>
+<#if previousDeployed.waitTimeout??>--wait-timeout ${previousDeployed.waitTimeout} </#if>
+<#if previousDeployed.waitState??>--wait-state ${previousDeployed.waitState} </#if>
+up -d --rollback --stack ${previousDeployed.name}
+</@compress>
+
 </#if>
