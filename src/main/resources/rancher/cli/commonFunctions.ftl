@@ -9,25 +9,22 @@
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-<#import "/rancher/cli/commonFunctions.ftl" as cmn>
 
-unzip ${previousDeployed.file.path} -d .
-<#if previousDeployed.serviceNames?has_content>
-  <#list previousDeployed.serviceNames as serviceName>
-    <@compress single_line=true>
-      ${previousDeployed.container.cliPath}
-      <@cmn.rancherConfigOptions deployed=previousDeployed />
-      <@cmn.rancherWaitOptions deployed=previousDeployed />
-      up -d --rollback --stack ${previousDeployed.name} ${serviceName}
-    </@compress>
+<#macro rancherConfigOptions deployed=deployed>
+  <#if deployed.container.url??>--url ${deployed.container.url} </#if>
+  <#if deployed.container.accessKey??>--access-key ${deployed.container.accessKey} </#if>
+  <#if deployed.container.secretKey??>--secret-key ${deployed.container.secretKey} </#if>
+  <#if deployed.container.config??>--config ${deployed.container.config} </#if>
+</#macro>
 
-  </#list>
-<#else>
-  <@compress single_line=true>
-    ${previousDeployed.container.cliPath}
-    <@cmn.rancherCommonOptions deployed=previousDeployed />
-    <@cmn.rancherWaitOptions deployed=previousDeployed />
-    up -d --rollback --stack ${previousDeployed.name}
-  </@compress>
+<#macro rancherWaitOptions deployed=deployed>
+  <#if deployed.wait>--wait </#if>
+  <#if deployed.waitTimeout??>--wait-timeout ${deployed.waitTimeout} </#if>
+  <#if deployed.waitState??>--wait-state ${deployed.waitState} </#if>
+</#macro>
 
-</#if>
+<#macro rancherUpgradeOptions>
+  --upgrade
+  <#if deployed.forceUpgrade>--force-upgrade </#if>
+  <#if deployed.confirmUpgrade>--confirm-upgrade </#if>
+</#macro>

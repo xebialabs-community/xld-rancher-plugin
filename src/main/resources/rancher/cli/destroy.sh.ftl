@@ -9,11 +9,10 @@
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
+<#import "/rancher/cli/commonFunctions.ftl" as cmn>
+
 <@compress single_line=true>
 ${previousDeployed.container.cliPath}
-<#if previousDeployed.container.url??>--url ${previousDeployed.container.url} </#if>
-<#if previousDeployed.container.accessKey??>--access-key ${previousDeployed.container.accessKey} </#if>
-<#if previousDeployed.container.secretKey??>--secret-key ${previousDeployed.container.secretKey} </#if>
-<#if previousDeployed.container.config??>--config ${previousDeployed.container.config} </#if>
+<@cmn.rancherConfigOptions deployed=previousDeployed/>
 rm --type stack ${previousDeployed.name}
 </@compress>
