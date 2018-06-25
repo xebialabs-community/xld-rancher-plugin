@@ -19,10 +19,9 @@ unzip ${deployed.file.path} -d .
       <@cmn.rancherConfigOptions />
       <@cmn.rancherWaitOptions />
       up -d
-      <@rancherUpradeOptions />
+      <@cmn.rancherUpgradeOptions />
       --stack ${deployed.name} ${serviceName}
     </@compress>
-
   </#list>
 <#else>
   <@compress single_line=true>
