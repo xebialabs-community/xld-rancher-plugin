@@ -3,12 +3,16 @@
 [![Build Status][xld-rancher-plugin-travis-image]][xld-rancher-plugin-travis-url]
 [![License: MIT][xld-rancher-plugin-license-image]][xld-rancher-plugin-license-url]
 ![Github All Releases][xld-rancher-plugin-downloads-image]
+![Codacy Badge][xld-rancher-plugin-codacy-image]
+![Maintainability][xld-rancher-plugin-codeclimate-image]
 
 [xld-rancher-plugin-travis-image]: https://travis-ci.org/xebialabs-community/xld-rancher-plugin.svg?branch=master
 [xld-rancher-plugin-travis-url]: https://travis-ci.org/xebialabs-community/xld-rancher-plugin
 [xld-rancher-plugin-license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
 [xld-rancher-plugin-license-url]: https://opensource.org/licenses/MIT
 [xld-rancher-plugin-downloads-image]: https://img.shields.io/github/downloads/xebialabs-community/xld-rancher-plugin/total.svg
+[xld-rancher-plugin-codacy-image]: https://api.codacy.com/project/badge/Grade/4212b8dfa4cd4cb6893322b162261f31
+[xld-rancher-plugin-codeclimate-image]: https://api.codeclimate.com/v1/badges/eba93f02daa52c542267/maintainability
 
 ## Preface
 
